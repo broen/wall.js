@@ -7,21 +7,6 @@ body {
 	background: #111;
 }
 
-/*
-
-variables:
-	width: 200
-	rows: 2
-	perspective: 1600px;
-	depth: -800px;
-
-auto:
-	center
-
-*/
-
-
-
 .wall {
     position: absolute;
     top: 0;
@@ -31,16 +16,16 @@ auto:
     -webkit-perspective: 1600px;
 }
 .wall article {
-	left: 600px;
-	top: 200px;
     position: absolute;
     width: 160px;
+    transition: all 0.4s;
 }
 .wall article * {
 	width: 160px;
 }
 .wall article:nth-of-type(1) {
 	-webkit-transform: rotateY(0deg) translateZ(-800px);
+	
 }
 
 .wall article:nth-of-type(2) {
