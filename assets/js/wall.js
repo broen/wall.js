@@ -1,6 +1,6 @@
 (function($) {
 
-    $.fn.dwall = function(options) {
+    $.fn.wall = function(options) {
 
         settings = $.extend({
 
