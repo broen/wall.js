@@ -134,7 +134,6 @@
                 cursor: 'pointer'
             }).removeClass('active');
         }
-
         /*
 
             TO DO:
@@ -142,8 +141,6 @@
                 maximum movement till center of viewport
                 iframe problem: invisible image on top should do the trick 
                 click somehwere to close active element
-
         */
     }
-
 }(jQuery));
