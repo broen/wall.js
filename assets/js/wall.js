@@ -32,20 +32,8 @@
                 overflow: 'hidden'
             });
             resetCenter(startLeft, startTop);
-            // calculate rows and columns
-            columns = Math.ceil(articles.length / settings.rows);
-            articles.each(function(index, elem) {
-                elem.count = index;
-                index++;
-                elem.row = Math.ceil(index / columns) - (settings.rows / 2) - 0.5;
-                elem.column = (index % columns);
-                if (elem.column == 0) {
-                    elem.column = columns;
-                }
-                elem.column = elem.column - (columns / 2) - 0.5;
-                startPosition(elem);
-                
-            });
+            
+            recalcPosition();
             // after startup
             init = false;
             wall.find('article').css({
@@ -63,30 +51,47 @@
             wall.mousemove(function() {
                 x = event.pageX;
                 y = event.pageY;
-                // mouse right
-                if (x > startLeft + settings.threshold / 2) {
-                    moveX = 1;
-                }
-                // mouse left
-                else if (x < startLeft - settings.threshold / 2) {
-                    moveX = -1;
-                }
-                else {
+
+                // x direction
+                moveX = x - startLeft;
+                if (Math.abs(moveX) <= settings.threshold) {
                     moveX = 0;
                 }
-                // mouse bottom
-                if (y > startTop + settings.threshold / 2) {
-                    moveY = -1;
-                }
-                // mouse top
-                else if (y < startTop - settings.threshold / 2) {
-                    moveY = 1
-                }
-                else {
+                moveX = moveX / startLeft;
+                // y direction
+                moveY = y - startTop;
+                if (Math.abs(moveY) <= settings.threshold) {
                     moveY = 0;
                 }
-                // what's the element here?
+                moveY = moveY / startTop;
+
                 recalcPosition();
+
+                console.log(moveX, moveY);
+
+
+                // mouse right
+                // if (x > startLeft + settings.threshold / 2) {
+                //     moveX = 1;
+                // }
+                // // mouse left
+                // else if (x < startLeft - settings.threshold / 2) {
+                //     moveX = -1;
+                // }
+                // else {
+                //     moveX = 0;
+                // }
+                // // mouse bottom
+                // if (y > startTop + settings.threshold / 2) {
+                //     moveY = -1;
+                // }
+                // // mouse top
+                // else if (y < startTop - settings.threshold / 2) {
+                //     moveY = 1
+                // }
+                // else {
+                //     moveY = 0;
+                // }
             });
             // on resize
             $(window).resize(function() {
@@ -119,27 +124,33 @@
 
         });
 
-        function startPosition(elem) {
-            // settings.variation
-            // TO DO
-            rotateY = 'rotateY(' + (-elem.column * settings.angle) + 'deg) ';
-            rotateX = 'rotateX(' + (elem.row * settings.angle) + 'deg) ';
-            translateZ = 'translateZ(' + settings.depth + 'px)';
-            articles.eq(elem.count).css({
-                '-webkit-transform': rotateY + rotateX + translateZ
-            }); 
-        }
-
         function recalcPosition() {
-            // moveX moveY
-            articles.each(function() {
-                css = $(this).css(['-webkit-transform']);
-                console.log(css);
+            // calculate rows and columns
+            columns = Math.ceil(articles.length / settings.rows);
+            articles.each(function(index, elem) {
+                elem.count = index;
+                index++;
+                elem.row = Math.ceil(index / columns) - (settings.rows / 2) - 0.5;
+                elem.column = (index % columns);
+                if (elem.column == 0) {
+                    elem.column = columns;
+                }
+                elem.column = elem.column - (columns / 2) - 0.5;
+
+                // TO DO 
+                // moveX moveY
+
+                rotateY = 'rotateY(' + (1 + moveY * settings.variation) * (-elem.column * settings.angle) + 'deg) ';
+                rotateX = 'rotateX(' + (1 + moveX * settings.variation) * (elem.row * settings.angle) + 'deg) ';
+                translateZ = 'translateZ(' + settings.depth + 'px)';
+                articles.eq(elem.count).css({
+                    '-webkit-transform': rotateY + rotateX + translateZ
+                });
+
             });
+            // TO DO
         }
 
-        // this does not work
-        // and won't
         function resetCenter(left, top) {            
             newLeft = left - settings.size / 2;
             newTop = top - settings.size / 2;
