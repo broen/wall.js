@@ -4,14 +4,16 @@
 
         settings = $.extend({
 
-            size        : 180,      // size in pixel of longest side
+            size        : 180,      // size of longest side in pixels
             rows        : 3,        // number of rows
-            angle       : 10,       // angle between each element
+            angle       : 10,       // angle between elements
             scale       : 1.1,      // additional scaling for active element
-            variation   : 0.1,      // angle variation on mouse movement
+            variationY  : 0.2,      // vertical angle variation on mouse movement
+            variationX  : 3.0,      // horizontal angle variation
             depth       : -1200,    // distance to the virtual center point
             perspective : 2000,     // camera distance
-            threshold   : 100       // distance to the center where the camera starts moving
+            threshold   : 0,        // center threshold
+            transition  : 0.0       // transition duration in seconds
 
         }, options);
 
@@ -21,8 +23,8 @@
             articles = wall.children('article');
             startLeft = $(window).width() / 2;
             startTop = $(window).height() / 2;
-            cssInactive = 0;
-            cssSaved = 0;
+            //cssInactive = 0;
+            //cssSaved = 0;
             init = true;
             moveX = 0;
             moveY = 0;
@@ -40,7 +42,7 @@
                 position: 'absolute',
                 width: settings.size,
                 height: settings.size,
-                transition: 'all 0.4s',
+                transition: 'all ' + settings.transition + 's',
                 cursor: 'pointer'
             });
             wall.find('article *').css({
@@ -64,34 +66,8 @@
                     moveY = 0;
                 }
                 moveY = moveY / startTop;
-
+                // new position
                 recalcPosition();
-
-                console.log(moveX, moveY);
-
-
-                // mouse right
-                // if (x > startLeft + settings.threshold / 2) {
-                //     moveX = 1;
-                // }
-                // // mouse left
-                // else if (x < startLeft - settings.threshold / 2) {
-                //     moveX = -1;
-                // }
-                // else {
-                //     moveX = 0;
-                // }
-                // // mouse bottom
-                // if (y > startTop + settings.threshold / 2) {
-                //     moveY = -1;
-                // }
-                // // mouse top
-                // else if (y < startTop - settings.threshold / 2) {
-                //     moveY = 1
-                // }
-                // else {
-                //     moveY = 0;
-                // }
             });
             // on resize
             $(window).resize(function() {
@@ -102,13 +78,13 @@
             // click on article
             articles.on('click', function() {
                 // saved css from previous element
-                cssSaved = cssInactive;
+                //cssSaved = cssInactive;
                 //save css from active element
-                if(!$(this).hasClass('active')) {
-                    cssInactive = $(this).css(['-webkit-transform', 'z-index', 'left', 'top']);
-                }
-                // close active element
-                closeActive(cssSaved);
+                // if(!$(this).hasClass('active')) {
+                //     cssInactive = $(this).css(['-webkit-transform', 'z-index', 'left', 'top']);
+                // }
+                // not working anymore - close active element
+                //closeActive(cssSaved);
                 // bring newly active element to the foreground
                 $(this).css({
                     '-webkit-transform': 'rotateY(0deg) translateZ(' + (-settings.depth * settings.scale + 'px'),
@@ -136,19 +112,14 @@
                     elem.column = columns;
                 }
                 elem.column = elem.column - (columns / 2) - 0.5;
-
-                // TO DO 
-                // moveX moveY
-
-                rotateY = 'rotateY(' + (1 + moveY * settings.variation) * (-elem.column * settings.angle) + 'deg) ';
-                rotateX = 'rotateX(' + (1 + moveX * settings.variation) * (elem.row * settings.angle) + 'deg) ';
+                // 3D transformations
+                rotateY = 'rotateY(' + ((moveX * settings.variationX) + (-elem.column)) * settings.angle + 'deg) ';
+                rotateX = 'rotateX(' + ((-moveY * settings.variationY) + (elem.row)) * settings.angle + 'deg) ';
                 translateZ = 'translateZ(' + settings.depth + 'px)';
                 articles.eq(elem.count).css({
                     '-webkit-transform': rotateY + rotateX + translateZ
                 });
-
             });
-            // TO DO
         }
 
         function resetCenter(left, top) {            
@@ -161,24 +132,24 @@
             });
         }
 
-        function closeActive(saved) {
-            $('.active').css({
-                '-webkit-transform': saved['-webkit-transform'],
-                'z-index': saved['z-index'],
-                'left': saved['left'],
-                'top': saved['top'],
-                cursor: 'pointer'
-            }).removeClass('active');
-        }
+        // function closeActive(saved) {
+        //     $('.active').css({
+        //         '-webkit-transform': saved['-webkit-transform'],
+        //         'z-index': saved['z-index'],
+        //         'left': saved['left'],
+        //         'top': saved['top'],
+        //         cursor: 'pointer'
+        //     }).removeClass('active');
+        // }
         /*
-
             TO DO:
-                mouse movement -> camera adjusts, angles change
-                    -> mousemove right/left > 100 -> column +/-
-                    -> mousemove up/down > 100 -> row +/- 
-                maximum movement till center of viewport
                 iframe problem: invisible image on top should do the trick 
-                click somehwere to close active element
+                    --> bigger image is new instance!
+                that onclick stuff is stupid crap
+                    --> redo, bigger image is new instance
+                no transition on magnification
+                    --> bigger image is new instance
+                click anywhere to close active element
         */
     }
 }(jQuery));
