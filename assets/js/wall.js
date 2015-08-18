@@ -4,14 +4,14 @@
 
         settings = $.extend({
 
-            size        : 180,  // size in pixel of longest side
-            rows        : 3,    // number of rows
-            angle       : 10,   // angle between each element
-            scale       : 1.1,  // additional scaling for active element
-            variation   : 1.1,  // angle variation vertical
-            depth       : -1200, // distance to the virtual center point
-            perspective : 2000, // camera distance
-            threshold   : 100   // distance to the center where the camera starts moving
+            size        : 180,      // size in pixel of longest side
+            rows        : 3,        // number of rows
+            angle       : 10,       // angle between each element
+            scale       : 1.1,      // additional scaling for active element
+            variation   : 0.1,      // angle variation on mouse movement
+            depth       : -1200,    // distance to the virtual center point
+            perspective : 2000,     // camera distance
+            threshold   : 100       // distance to the center where the camera starts moving
 
         }, options);
 
@@ -23,8 +23,9 @@
             startTop = $(window).height() / 2;
             cssInactive = 0;
             cssSaved = 0;
-            //index = 1;
             init = true;
+            moveX = 0;
+            moveY = 0;
             // initial center
             wall.css({
                 '-webkit-perspective': settings.perspective + 'px',
@@ -42,12 +43,11 @@
                     elem.column = columns;
                 }
                 elem.column = elem.column - (columns / 2) - 0.5;
-                recalcPosition(elem, init);
+                startPosition(elem);
                 
             });
             // after startup
             init = false;
-            //recalcPosition();
             wall.find('article').css({
                 position: 'absolute',
                 width: settings.size,
@@ -61,7 +61,32 @@
             });
             // mouse movement
             wall.mousemove(function() {
-                //TO DO what happens when the mouse moves
+                x = event.pageX;
+                y = event.pageY;
+                // mouse right
+                if (x > startLeft + settings.threshold / 2) {
+                    moveX = 1;
+                }
+                // mouse left
+                else if (x < startLeft - settings.threshold / 2) {
+                    moveX = -1;
+                }
+                else {
+                    moveX = 0;
+                }
+                // mouse bottom
+                if (y > startTop + settings.threshold / 2) {
+                    moveY = -1;
+                }
+                // mouse top
+                else if (y < startTop - settings.threshold / 2) {
+                    moveY = 1
+                }
+                else {
+                    moveY = 0;
+                }
+                // what's the element here?
+                recalcPosition();
             });
             // on resize
             $(window).resize(function() {
@@ -94,28 +119,28 @@
 
         });
 
-        function recalcPosition(elem, init) {
-            if (init) {
-                x = startLeft;
-                y = startTop;
-            }
-            else {
-                x = event.pageX;
-                y = event.pageY; 
-            }
-            //console.log(elem);
+        function startPosition(elem) {
+            // settings.variation
+            // TO DO
             rotateY = 'rotateY(' + (-elem.column * settings.angle) + 'deg) ';
             rotateX = 'rotateX(' + (elem.row * settings.angle) + 'deg) ';
             translateZ = 'translateZ(' + settings.depth + 'px)';
             articles.eq(elem.count).css({
                 '-webkit-transform': rotateY + rotateX + translateZ
             }); 
-            // TO DO 
-            // pos = pos - window/2
         }
 
-        function resetCenter(left, top) {
-            
+        function recalcPosition() {
+            // moveX moveY
+            articles.each(function() {
+                css = $(this).css(['-webkit-transform']);
+                console.log(css);
+            });
+        }
+
+        // this does not work
+        // and won't
+        function resetCenter(left, top) {            
             newLeft = left - settings.size / 2;
             newTop = top - settings.size / 2;
             // console.log(newLeft, newTop);
@@ -138,6 +163,8 @@
 
             TO DO:
                 mouse movement -> camera adjusts, angles change
+                    -> mousemove right/left > 100 -> column +/-
+                    -> mousemove up/down > 100 -> row +/- 
                 maximum movement till center of viewport
                 iframe problem: invisible image on top should do the trick 
                 click somehwere to close active element
