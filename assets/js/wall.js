@@ -8,8 +8,8 @@
             rows        : 3,        // number of rows
             angle       : 10,       // angle between elements
             scale       : 1.1,      // additional scaling for active element
-            variationY  : 0.2,      // vertical angle variation on mouse movement
-            variationX  : 3.0,      // horizontal angle variation
+            variationY  : 0.15,      // vertical angle variation on mouse movement
+            variationX  : 2.0,      // horizontal angle variation
             depth       : -1200,    // distance to the virtual center point
             perspective : 2000,     // camera distance
             threshold   : 0,        // center threshold
@@ -149,6 +149,7 @@
                     --> redo, bigger image is new instance
                 no transition on magnification
                     --> bigger image is new instance
+                    --> magnifies from mouse position
                 click anywhere to close active element
         */
     }
