@@ -1,4 +1,4 @@
 # 3D-Wall
-A 3D wall gallery with html5
+A 3D wall gallery plugin for jQuery
 
 under construction
