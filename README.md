@@ -3,7 +3,6 @@ A 3D wall gallery plugin for jQuery
 
 ## Setup
 Include the script
-
 	<script src="js/wall.js"></script>
 
 
