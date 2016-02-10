@@ -4,41 +4,52 @@
 
         settings = $.extend({
 
-            size        : 180,      // size of longest side in pixels
-            rows        : 3,        // number of rows
-            angle       : 10,       // angle between elements
-            scale       : 1.1,      // additional scaling for active element
-            variationY  : 0.15,      // vertical angle variation on mouse movement
-            variationX  : 2.0,      // horizontal angle variation
-            depth       : -1200,    // distance to the virtual center point
-            perspective : 2000,     // camera distance
-            threshold   : 0,        // center threshold
-            transition  : 0.0       // transition duration in seconds
+            size        : 180,                  // size of longest side in pixels
+            rows        : 3,                    // number of rows
+            angle       : 10,                   // angle between elements
+            scale       : 1.1,                  // additional scaling for active element
+            variationY  : 0.15,                 // vertical angle variation on mouse movement
+            variationX  : 2.0,                  // horizontal angle variation
+            depth       : -1200,                // distance to the virtual center point
+            perspective : 2000,                 // camera distance
+            threshold   : 0,                    // center threshold
+            transition  : 0.0,                  // transition duration in seconds
+            selector    : 'article',            // wall items
+            lightbox    : 'rgba(0,0,0,0.4)'     // lightbox background color
 
         }, options);
 
         return this.each(function(){
             // variables
             wall = $(this);
-            articles = wall.children('article');
+            items = wall.children(settings.selector);
             startLeft = $(window).width() / 2;
             startTop = $(window).height() / 2;
             //cssInactive = 0;
             //cssSaved = 0;
-            init = true;
+            //init = true;
             moveX = 0;
             moveY = 0;
             // initial center
             wall.css({
-                '-webkit-perspective': settings.perspective + 'px',
+                'perspective': settings.perspective + 'px',
                 overflow: 'hidden'
+            });
+            // add lightbox background (collects the cliks for closing the big box)
+            $('<div class="lightbox"></div>').appendTo(wall)
+            .css({
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                background: settings.lightbox,
+                display: 'none'
             });
             resetCenter(startLeft, startTop);
             
             recalcPosition();
             // after startup
-            init = false;
-            wall.find('article').css({
+            //init = false;
+            wall.find(settings.selector).css({
                 position: 'absolute',
                 width: settings.size,
                 height: settings.size,
@@ -76,34 +87,43 @@
                 resetCenter(startLeft, startTop);
             });
             // click on article
-            articles.on('click', function() {
+            items.on('click', function() {
                 // saved css from previous element
                 //cssSaved = cssInactive;
                 //save css from active element
                 // if(!$(this).hasClass('active')) {
-                //     cssInactive = $(this).css(['-webkit-transform', 'z-index', 'left', 'top']);
+                //     cssInactive = $(this).css(['transform', 'z-index', 'left', 'top']);
                 // }
                 // not working anymore - close active element
                 //closeActive(cssSaved);
                 // bring newly active element to the foreground
-                $(this).css({
-                    '-webkit-transform': 'rotateY(0deg) translateZ(' + (-settings.depth * settings.scale + 'px'),
+
+
+                $(this).clone().appendTo(wall)
+                .css({
+                    transition: '1s',
+                    'transform': 'rotateY(0deg) translateZ(' + (-settings.depth * settings.scale + 'px'),
                     'z-index': 15,
                     left: startLeft - settings.size / 2,
                     top: startTop - settings.size / 2,
                     cursor: 'default'
-                }).addClass('active');
+                })
+                .addClass('active');
+                $('.lightbox').fadeIn();
             });
             // click away from foreground to close popup
-            // TODO
+            $('.lightbox').on('click', function() {
+                $('.lightbox').fadeOut();
+                $('.active').remove();
+            });
 
 
         });
 
         function recalcPosition() {
             // calculate rows and columns
-            columns = Math.ceil(articles.length / settings.rows);
-            articles.each(function(index, elem) {
+            columns = Math.ceil(items.length / settings.rows);
+            items.each(function(index, elem) {
                 elem.count = index;
                 index++;
                 elem.row = Math.ceil(index / columns) - (settings.rows / 2) - 0.5;
@@ -116,8 +136,8 @@
                 rotateY = 'rotateY(' + ((moveX * settings.variationX) + (-elem.column)) * settings.angle + 'deg) ';
                 rotateX = 'rotateX(' + ((-moveY * settings.variationY) + (elem.row)) * settings.angle + 'deg) ';
                 translateZ = 'translateZ(' + settings.depth + 'px)';
-                articles.eq(elem.count).css({
-                    '-webkit-transform': rotateY + rotateX + translateZ
+                items.eq(elem.count).css({
+                    'transform': rotateY + rotateX + translateZ
                 });
             });
         }
@@ -126,7 +146,7 @@
             newLeft = left - settings.size / 2;
             newTop = top - settings.size / 2;
             // console.log(newLeft, newTop);
-            articles.css({
+            items.css({
                 top: newTop,
                 left: newLeft
             });
@@ -134,7 +154,7 @@
 
         // function closeActive(saved) {
         //     $('.active').css({
-        //         '-webkit-transform': saved['-webkit-transform'],
+        //         'transform': saved['transform'],
         //         'z-index': saved['z-index'],
         //         'left': saved['left'],
         //         'top': saved['top'],
