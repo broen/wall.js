@@ -1,6 +1,9 @@
 # jQuery 3D-Wall
 A 3D wall gallery plugin for jQuery
 
+![Demo](demo/screenshot.jpg)
+
+
 ### Setup
 Include the script
 
@@ -23,16 +26,23 @@ Initialize the plugin on load
 		$('.wall').wall();
 	});
 
-### Use settings like this:
+
+
+
+
+
+#### Use settings like this
 
 	.wall({
 		size: 180,
 		rows: 3
 	});
 
-### Possible settings and default values:
 
-Size of longest side in pixels
+
+#### All settings and default values
+
+Size of the longest side in pixels
 
 	size: 180
 
@@ -75,3 +85,27 @@ Button text for navigation, leave blank if you don't want buttons
 
 	btnback: '<'
 	btnnext: '>'
+
+
+
+
+
+### Styling
+Although all the transformations are CSS3, there are no stylesheets included to make the wall look fancy. If you want to, you can spice it up yourself by using the following classes:
+
+The active item
+
+	.wall-active
+
+Navigation Buttons
+
+	.wall-nav
+		.wall-back
+		.wall-next
+
+Thumbnail overlay
+
+	.wall-overlay
+
+
+That's it. Have fun.
