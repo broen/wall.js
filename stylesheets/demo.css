@@ -1,0 +1,26 @@
+.wall {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.wall-nav {
+	position: absolute;
+	top: 45%;
+	width: 40px;
+	height: 40px;
+	color: #eee;
+	display: inline-block;
+	font-size: 32px;
+	text-shadow: 2px 0px 5px rgba(0,0,0,0.6);
+}
+
+.wall-back {
+	left: 10%;
+}
+
+.wall-next {
+	right: 10%;
+}
